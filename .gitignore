@@ -1,0 +1,6 @@
+BraTS2020_TrainingData/
+BraTS2020_ValidationData/
+brain-tumor-segmentation-using-u-net.ipynb
+3d-mri-brain-tumor-segmentation.ipynb
+brats20-3dunet-3dautoencoder.ipynb
+.venv
