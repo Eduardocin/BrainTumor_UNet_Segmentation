@@ -1,37 +1,10 @@
-# Deep Learning Framework
-torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
-
-# Data Processing
-numpy>=1.21.0
-pandas>=1.3.0
-scipy>=1.7.0
-
-# Machine Learning
-scikit-learn>=1.0.0
-
-# Medical Imaging
-nibabel>=4.0.0
-
-# Visualization
-matplotlib>=3.4.0
-seaborn>=0.11.0
-
-# Image Processing
-pillow>=8.0.0
-
-# Jupyter Environment
-jupyterlab>=3.0.0
-ipykernel>=6.0.0
-notebook>=6.4.0
-
-# Progress Bars (useful for training)
-tqdm>=4.62.0
-
-# Development Tools
-black>=21.0.0
-flake8>=4.0.0
-
-# Optional: For better performance
-# numba>=0.56.0
+torch
+torchvision
+torchaudio
+numpy
+pandas
+matplotlib
+pillow
+nibabel
+jupyterlab
+ipykernel
