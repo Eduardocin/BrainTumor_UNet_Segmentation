@@ -1,0 +1,54 @@
+# Dependências principais para Segmentação de Tumores Cerebrais com U-Net
+
+# ⚠️ IMPORTANTE: Para GPUs NVIDIA, instale PyTorch com CUDA usando:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# Deep Learning (versões com suporte CUDA 12.1)
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+
+# Computação Científica
+numpy==2.2.6
+scipy==1.16.0
+
+# Visualização e Gráficos
+matplotlib==3.10.3
+seaborn==0.13.2
+
+# Machine Learning
+scikit-learn==1.7.0
+
+# Manipulação de Dados
+pandas==2.3.1
+
+# Processamento de Imagens
+opencv-python==4.12.0.88
+pillow==11.3.0
+
+# Imagens Médicas (NIfTI format)
+nibabel==5.3.2
+
+# Jupyter Notebooks
+jupyter==1.1.1
+ipykernel==6.29.5
+
+# Utilitários
+tqdm==4.67.1
+
+# 📋 INSTRUÇÕES DE INSTALAÇÃO:
+# 
+# 1. Para criar o ambiente virtual:
+#    python -m venv venv
+#    venv\Scripts\activate  (Windows)
+#    source venv/bin/activate  (Linux/Mac)
+#
+# 2. Para instalar dependências com suporte CUDA:
+#    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+#    pip install -r requirements.txt
+#
+# 3. Para CPU apenas (sem GPU):
+#    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+#    pip install -r requirements.txt
+#
+# ⚠️ NOTA: As versões do PyTorch com CUDA devem ser instaladas antes das outras dependências
