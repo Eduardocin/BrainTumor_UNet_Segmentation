@@ -1,123 +1,116 @@
-# Segmentação de Tumores Cerebrais - BraTS2020
+# 🧠 Segmentação de Tumores Cerebrais - BraTS2020
 
-## Visão Geral
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-1.13+-ee4c2c.svg)](https://pytorch.org/)
+[![U-Net](https://img.shields.io/badge/Model-3D%20U--Net-green.svg)](https://arxiv.org/abs/1606.06650)
+[![Status](https://img.shields.io/badge/Status-Concluído-brightgreen.svg)](.)
 
-Este projeto implementa um pipeline completo de segmentação automática de tumores cerebrais utilizando redes neurais U-Net 3D, baseado no dataset BraTS2020 (Brain Tumor Segmentation Challenge). O objetivo é segmentar diferentes regiões tumorais em imagens de ressonância magnética (MRI) do cérebro.
+## 📋 Visão Geral
+Este projeto implementa um **pipeline completo de segmentação automática de tumores cerebrais** utilizando uma arquitetura **3D U-Net** otimizada, treinada sobre o dataset **BraTS2020** (*Brain Tumor Segmentation Challenge*).  
+O objetivo é identificar e segmentar sub-regiões tumorais em imagens de ressonância magnética (MRI), auxiliando no **diagnóstico rápido e padronizado**.
 
-## Problema
+---
+
+## 🧪 Contexto e Desafio
 
 ### Contexto Médico
-- **Gliomas** são os tumores cerebrais primários mais comuns e agressivos
-- **Segmentação manual** é um processo demorado e sujeito a variabilidade entre especialistas
-- **Diagnóstico precoce** e segmentação precisa são cruciais para o planejamento do tratamento
+- **Gliomas**: tumores cerebrais primários mais comuns e agressivos.
+- **Segmentação manual**: demorada, subjetiva e variável entre especialistas.
+- **Necessidade clínica**: segmentação precisa é crucial para planejamento cirúrgico e radioterápico.
 
-### Desafio Técnico
-- Segmentar **4 regiões distintas** em imagens 3D de MRI:
-  - **Fundo** (tecido saudável)
-  - **NCR/NET** (Necrose/Não-realçante)
-  - **Edema** (região peritumoral)
-  - **Tumor Realçante** (região ativa)
+### Tarefa de Segmentação
+O modelo deve identificar **4 classes** em volumes 3D de MRI:
+1. **Fundo** (tecido saudável)
+2. **NCR/NET** – Necrose / Núcleo não realçante
+3. **Edema** – Região peritumoral
+4. **Tumor Realçante** – Parte ativa do tumor
 
-## Dataset BraTS2020
+---
 
-### Modalidades de Imagem
-- **T1**: Contraste anatômico básico
-- **T1ce**: T1 com contraste (realça tumor ativo)
-- **T2**: Detecta edema e alterações
-- **FLAIR**: Suprime fluido cerebrospinal
+## 🗂 Dataset BraTS2020
 
-### Especificações
+- **Modalidades**: T1, T1ce, T2, FLAIR
 - **Formato**: NIfTI (.nii)
-- **Resolução Original**: 240×240×155 voxels
-- **Pacientes**: ~370 casos de treinamento
-- **Anotações**: Segmentação manual por especialistas
+- **Resolução original**: 240×240×155 voxels
+- **Pacientes**: 369 (250 treino / 74 validação / 45 teste)
+- **Anotações**: Máscaras manuais por especialistas
+- **Pré-processamento aplicado**:
+  - Descarte da modalidade T1 (baixo contraste)
+  - Normalização Min-Max para [0,1]
+  - Redimensionamento para 128×128×64
+  - Remapeamento de labels (0,1,2,4 → 0,1,2,3)
 
-## Solução Proposta
+---
 
-### Pipeline de Processamento
-1. **Análise Exploratória**: Análise de contraste entre modalidades
-2. **Seleção Automática**: Escolha das 3 melhores modalidades por contraste
-3. **Pré-processamento**:
-   - Normalização Min-Max [0,1]
-   - Cropping inteligente baseado na máscara
-   - Redimensionamento para 128×128×64
-   - Remapeamento de labels (0,1,2,4 → 0,1,2,3)
+## 🏗 Arquitetura do Modelo
 
-### Arquitetura do Modelo
-- **U-Net 3D** com skip connections
-- **Input**: 3 modalidades selecionadas automaticamente
-- **Output**: Segmentação de 4 classes
-- **Loss Function**: Dice Loss + CrossEntropy
+- **Base**: 3D U-Net com *skip connections*
+- **Encoder**:
+  - Convoluções 3D (3×3×3)
+  - Group Normalization
+  - LeakyReLU (slope=0.01)
+- **Decoder**:
+  - Upsampling + concatenação com *features* do encoder
+  - LeakyReLU (slope=0.2)
+- **Parâmetros treináveis**: ~5.65M
+- **Loss Function**: Cross-Entropy ponderada + Dice Loss
+- **Otimização**:
+  - Otimizador: Adam (lr=1e-3)
+  - Redução dinâmica de *learning rate*
+  - Early Stopping (paciente=5)
+  - Batch size = 16, 20 épocas
 
-## Inovações do Projeto
+---
 
-### 1. Seleção Automática de Modalidades
-- Análise quantitativa de contraste entre regiões tumorais
-- Seleção das 3 modalidades com melhor separabilidade
-- Redução de dimensionalidade mantendo qualidade
+## 📊 Resultados
 
-### 2. Pipeline Inteligente
-- Cropping automático baseado na máscara de tumor
-- Processamento robusto com fallbacks para casos edge
-- Visualização completa do processo
+### Avaliação Quantitativa (Validação)
+| Região            | Dice Score |
+|-------------------|------------|
+| Whole Tumor (WT)  | **0.811**  |
+| Tumor Core (TC)   | 0.644      |
+| Enhancing Tumor (ET) | 0.563   |
 
-### 3. Implementação Otimizada
-- Dataset PyTorch customizado
-- DataLoader eficiente para volumes 3D
-- Estrutura modular e reutilizável
+### Casos Representativos
+- **BraTS20_Training_090** – boa segmentação em todas as sub-regiões.
+- **BraTS20_Training_278** – modelo corretamente detecta ausência de tumor realçante (ET), mostrando alta especificidade.
 
-## Estrutura do Projeto
+---
 
+## 📂 Estrutura do Projeto
 ```
 📁 BrainTumor_UNet_Segmentation/
-├── 📓 Project.ipynb                 # Notebook principal
-├── 📄 README.md                     # Este arquivo
-├── 📄 requirements.txt              # Dependências
-├── 📄 LICENSE                       # Licença MIT
-├── 📁 BraTS2020_TrainingData/       # Dataset de treinamento
-└── 📁 BraTS2020_ValidationData/     # Dataset de validação
+├── 📓 Project.ipynb # Notebook principal
+├── 📄 README.md # Este arquivo
+├── 📄 requirements.txt # Dependências
+├── 📄 LICENSE # Licença MIT
+├── 📁 BraTS2020_TrainingData/ # Dataset de treinamento
+└── 📁 BraTS2020_ValidationData/ # Dataset de validação
 ```
 
-## Resultados Esperados
 
-### Métricas de Avaliação
-- **Dice Score**: Sobreposição entre predição e ground truth
-- **IoU (Jaccard)**: Interseção sobre união
-- **Hausdorff Distance**: Distância máxima entre superfícies
-- **Sensitivity/Specificity**: Detecção de regiões tumorais
+---
 
-### Aplicações Clínicas
-- **Planejamento cirúrgico**: Delimitação precisa do tumor
-- **Radioterapia**: Definição de volumes alvo
-- **Monitoramento**: Acompanhamento da evolução tumoral
-- **Pesquisa**: Análise quantitativa de características tumorais
+## ⚙ Tecnologias Utilizadas
+- Python 3.8+
+- PyTorch
+- nibabel
+- scikit-learn
+- matplotlib
+- NumPy / SciPy
 
-## Tecnologias Utilizadas
+---
 
-- **Python 3.8+**
-- **PyTorch**: Framework de deep learning
-- **nibabel**: Manipulação de imagens médicas NIfTI
-- **scikit-learn**: Pré-processamento e métricas
-- **matplotlib**: Visualização
-- **numpy/scipy**: Computação científica
+## 🚀 Próximos Passos
+- Explorar arquiteturas avançadas (com mecanismos de atenção)
+- Aplicar *data augmentation* mais sofisticado
+- Implementar *ensemble* de modelos para maior robustez
+- Avaliar em dados clínicos reais
 
-## Contribuições
+---
 
-Este projeto demonstra:
-- **Pipeline de ML médico** completo e reproduzível
-- **Seleção automática de features** para imagens médicas
-- **Boas práticas** em processamento de dados 3D
-- **Visualização clara** do processo de segmentação
-
-## Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## Referências
-
-- **BraTS Challenge**: https://www.med.upenn.edu/cbica/brats2020/
-- **U-Net Original**: Ronneberger et al. "U-Net: Convolutional Networks for Biomedical Image Segmentation"
-- **3D U-Net**: Çiçek et al. "3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation"
+## 📜 Licença
+Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
